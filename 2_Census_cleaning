@@ -1,0 +1,52 @@
+### Census cleaning###
+#D. Requena (Apr 2017)
+
+#to be able to download packages in this computer
+.libPaths("~/R/win-library/3.3")
+
+#Load packages
+require(ggplot2)
+require(sqldf)
+require(lubridate)
+
+#Set Workspace
+setwd("C:/Users/Daniela Requena/Google Drive/ECI_dendrometers/CSVs/PLOTS_census")
+census_BOB01 <- read.table("BOB01_census_example.csv", header=TRUE, sep=",", na.strings=c("NA", "NaN", ""), dec=".", strip.white=TRUE)
+
+# re-format census
+str(census_BOB01)
+#h <- cbind(as.numeric(census_KEN01$Height..2013.1), as.numeric(census_KEN01$Height..2015.1/1000)) 
+census_BOB01$height_m     <- census_BOB01$HEIGHT_average_m
+census_BOB01$density      <- census_BOB01$WD
+census_BOB01$tree_tag     <- as.character(census_BOB01$tree_tag)
+census_BOB01$plot         <- "BOB-01"
+census_BOB01$plot_code    <- "BOB-01" # This was added to work with NPPacw_census_function_2015.R
+
+#Work only with the most recent census
+census_BOB01$dbh <- (as.numeric(as.character(census_BOB01$DBH0)))/10
+#Divite by 10 to change into m
+#I haven't found out the date of the last census, so I'll just assume that it is 20-12-2015
+date_3 <- as.character("2015/04/10") # 19 de Agosto 2009
+
+#this is just to re-check data & units
+str(census_BOB01)
+
+# check the number of distinct tags in each df
+sqldf("select count(1) from (select distinct tree_tag from census_BOB01)")
+sqldf("select count(1) from census_BOB01")
+
+
+census <- census_BOB01
+
+
+setwd("C:/Users/Daniela Requena/Google Drive/ECI_dendrometers/CSVs/PLOTS_GEM_DATABASE/GEM_AFRICA/Ghana")
+dendrometer <- read.table("BOB01_GEM.csv", header=TRUE, sep=",", na.strings=c("NA", "NaN", ""), dec=".", strip.white=TRUE)
+plotname = "BOB-01"
+allometric_option = "Default"
+height_correction_option = "Default"
+census_year = 2015
+plotit=T
+
+#Find the NNPPacw_dendro_function_2015.R in GitHub
+call function NPPacw_dendro
+#WORK INSIDE THE BRACKETS!
